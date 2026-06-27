@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitoramento DOU + CFM</title>
+  <meta name="theme-color" content="#0b3d2e">
+  <!-- Ícone do atalho (aparece ao "adicionar à tela inicial" / favoritar) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230b3d2e'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle'%3E%E2%9A%95%EF%B8%8F%3C/text%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230b3d2e'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle'%3E%E2%9A%95%EF%B8%8F%3C/text%3E%3C/svg%3E">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(160deg, #0b3d2e 0%, #14624a 100%);
+      color: #fff; padding: 24px; text-align: center;
+    }
+    .icone {
+      width: 96px; height: 96px; border-radius: 22px; background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 54px; margin-bottom: 18px; box-shadow: 0 8px 24px rgba(0,0,0,.3);
+    }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    p.sub { margin: 0 0 28px; opacity: .85; font-size: 14px; max-width: 320px; }
+    .botoes { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 340px; }
+    a.btn {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 18px; border-radius: 14px; text-decoration: none;
+      background: rgba(255,255,255,.12); color: #fff; font-size: 16px; font-weight: 600;
+      border: 1px solid rgba(255,255,255,.18); transition: background .15s;
+    }
+    a.btn:hover { background: rgba(255,255,255,.22); }
+    a.btn .emoji { font-size: 22px; }
+    a.btn small { display: block; font-weight: 400; opacity: .8; font-size: 12px; }
+    .dica { margin-top: 28px; font-size: 12px; opacity: .75; max-width: 320px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="icone">⚕️</div>
+  <h1>Monitoramento DOU + CFM</h1>
+  <p class="sub">Acesso rápido ao robô que verifica publicações sobre médicos e pacientes todos os dias às 8h.</p>
+
+  <div class="botoes">
+    <a class="btn" target="_blank" rel="noopener"
+       href="https://github.com/wendraminadvocacia/formulario/actions/workflows/monitoramento.yml">
+      <span class="emoji">▶️</span>
+      <span>Ver agendamento / Rodar agora
+        <small>Abre a página do robô no GitHub Actions</small>
+      </span>
+    </a>
+    <a class="btn" target="_blank" rel="noopener"
+       href="https://github.com/wendraminadvocacia/formulario/tree/main/relatorios">
+      <span class="emoji">📄</span>
+      <span>Ver relatórios diários
+        <small>Histórico de publicações encontradas</small>
+      </span>
+    </a>
+    <a class="btn" target="_blank" rel="noopener"
+       href="https://github.com/wendraminadvocacia/formulario/blob/main/config.yaml">
+      <span class="emoji">⚙️</span>
+      <span>Ajustar palavras-chave
+        <small>Editar o que é monitorado</small>
+      </span>
+    </a>
+  </div>
+
+  <p class="dica">
+    📲 <b>Para virar um ícone no celular:</b> abra esta página no navegador e toque em
+    "Compartilhar" → "Adicionar à Tela de Início" (iPhone) ou no menu ⋮ →
+    "Adicionar à tela inicial" (Android).
+  </p>
+</body>
+</html>
