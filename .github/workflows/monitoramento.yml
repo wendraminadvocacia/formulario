@@ -1,0 +1,65 @@
+name: Monitoramento DOU e CFM
+
+# Roda todo dia às 08:05 no horário de Brasília (= 11:05 UTC).
+# Observação: o agendador do GitHub pode atrasar alguns minutos em horários
+# de pico — o relatório sempre traz o horário real em que foi gerado.
+on:
+  schedule:
+    - cron: "5 11 * * *"
+  workflow_dispatch:   # permite rodar manualmente pelo botão "Run workflow"
+
+permissions:
+  contents: write       # necessário para salvar os relatórios e o estado no repositório
+
+concurrency:
+  group: monitoramento
+  cancel-in-progress: false
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Executar o monitoramento
+        run: python monitor.py
+
+      - name: Enviar relatório para o Google Drive (rclone)
+        env:
+          GDRIVE_TOKEN: ${{ secrets.GDRIVE_RCLONE_TOKEN }}
+        if: ${{ env.GDRIVE_TOKEN != '' }}
+        run: |
+          set -e
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+          PASTA=$(python -c "import yaml;print(yaml.safe_load(open('config.yaml'))['drive']['pasta'])")
+          mkdir -p ~/.config/rclone
+          cat > ~/.config/rclone/rclone.conf <<EOF
+          [gdrive]
+          type = drive
+          scope = drive
+          token = ${GDRIVE_TOKEN}
+          EOF
+          echo "Enviando relatórios .txt para a pasta '$PASTA' no Google Drive..."
+          rclone copy relatorios "gdrive:${PASTA}" --include "*.txt" --drive-export-formats txt -v
+
+      - name: Salvar relatórios e estado no repositório
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add relatorios estado
+          if git diff --cached --quiet; then
+            echo "Nada novo para salvar."
+          else
+            git commit -m "Relatório de monitoramento DOU/CFM ($(date -u +%F))"
+            git push
+          fi

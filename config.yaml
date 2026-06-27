@@ -1,0 +1,43 @@
+# Configuração do monitoramento do Diário Oficial da União (DOU) e do CFM.
+# Edite este arquivo para ajustar o que é monitorado, sem mexer no código.
+
+# Palavras-chave usadas para filtrar as publicações.
+# A comparação ignora acentos e maiúsculas/minúsculas:
+#   "medico" encontra "médico", "Médico", "MÉDICOS", etc.
+palavras_chave:
+  - medico
+  - medica
+  - medicina
+  - paciente
+  - "conselho federal de medicina"
+  - "conselho regional de medicina"
+  - "ato medico"
+  - prontuario
+  - telemedicina
+  - "etica medica"
+  - "erro medico"
+  - "responsabilidade medica"
+  - "exercicio da medicina"
+  - "prescricao medica"
+  - "sigilo medico"
+  - "registro medico"
+
+# Diário Oficial da União.
+dou:
+  # Seções a verificar:
+  #   do1 = atos normativos (leis, decretos, portarias, resoluções)
+  #   do2 = atos de pessoal (nomeações, etc.)
+  #   do3 = contratos, editais e avisos
+  secoes: [do1, do2, do3]
+
+# Conselho Federal de Medicina.
+# Itens encontrados nessas páginas já são, por natureza, ligados a médicos,
+# então são incluídos no relatório independentemente das palavras-chave.
+cfm:
+  paginas:
+    - https://portal.cfm.org.br/noticias/resolucao/
+
+# Nome da pasta no Google Drive onde os relatórios são enviados.
+# O rclone cria a pasta automaticamente se ela ainda não existir.
+drive:
+  pasta: "Monitoramento DOU e CFM - Médicos e Pacientes"
