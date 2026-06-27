@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "motion-mcp": {
+      "source": {
+        "source": "github",
+        "repo": "Motion-Creative/motion-creative-plugin"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "motion-creative@motion-mcp": true
+  }
+}
