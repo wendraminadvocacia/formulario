@@ -31,11 +31,13 @@ dou:
   secoes: [do1, do2, do3]
 
 # Conselho Federal de Medicina.
-# Itens encontrados nessas páginas já são, por natureza, ligados a médicos,
-# então são incluídos no relatório independentemente das palavras-chave.
+# A lista de notícias/resoluções do portal é carregada por JavaScript, então
+# usamos a API REST do WordPress do portal (devolve as publicações em JSON).
+# Os itens do CFM já são, por natureza, ligados a médicos, então são incluídos
+# no relatório independentemente das palavras-chave.
 cfm:
-  paginas:
-    - https://portal.cfm.org.br/noticias/resolucao/
+  api: https://portal.cfm.org.br/wp-json/wp/v2/posts
+  por_pagina: 30
 
 # Nome da pasta no Google Drive onde os relatórios são enviados.
 # O rclone cria a pasta automaticamente se ela ainda não existir.

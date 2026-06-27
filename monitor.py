@@ -227,69 +227,52 @@ def buscar_dou(data_ddmmaaaa: str, secoes: list[str]) -> list[dict]:
 # Coleta: Conselho Federal de Medicina
 # --------------------------------------------------------------------------- #
 
-def buscar_cfm(paginas: list[str]) -> list[dict]:
+def buscar_cfm(api_url: str, por_pagina: int) -> list[dict]:
     """
-    Raspa as páginas de notícias/resoluções do portal do CFM e devolve os
-    itens listados (título + link). Como a fonte é do próprio CFM, todos os
-    itens são considerados relevantes para médicos.
+    Coleta as publicações recentes do portal do CFM pela API REST do WordPress.
+    A página de notícias é carregada por JavaScript, então a raspagem do HTML
+    não funciona; a API devolve os mesmos itens em JSON, de forma confiável.
+    Como a fonte é do próprio CFM, todos os itens são considerados relevantes.
     """
     resultados: list[dict] = []
-    vistos_url: set[str] = set()
     sessao = nova_sessao()
 
-    for pagina in paginas:
-        log(f"CFM: baixando {pagina} ...")
-        resp = baixar(sessao, pagina)
-        if resp is None:
+    url = f"{api_url}?per_page={por_pagina}&_fields=id,date,link,title"
+    log(f"CFM: consultando a API {url} ...")
+    resp = baixar(sessao, url)
+    if resp is None:
+        return resultados
+
+    try:
+        posts = resp.json()
+    except Exception as e:
+        log(f"CFM: a resposta da API não é um JSON válido: {e}")
+        return resultados
+
+    if not isinstance(posts, list):
+        log(f"CFM: resposta inesperada da API: {str(posts)[:200]}")
+        return resultados
+
+    log(f"CFM: API retornou {len(posts)} publicações recentes.")
+    for p in posts:
+        titulo_html = (p.get("title") or {}).get("rendered", "")
+        titulo = BeautifulSoup(titulo_html, "lxml").get_text(" ", strip=True)
+        link = p.get("link", "")
+        if not titulo or not link:
             continue
-
-        soup = BeautifulSoup(resp.text, "lxml")
-        candidatos = soup.find_all("a", href=True)
-
-        if DEBUG:
-            amostras = []
-            for a in candidatos:
-                h = a["href"]
-                if re.search(r"noticias|resolu", h, re.I):
-                    amostras.append(h)
-            log(f"  [debug] {len(candidatos)} links no total; "
-                f"{len(amostras)} parecem de notícia/resolução. Exemplos:")
-            for h in amostras[:15]:
-                log(f"    [debug] {h}")
-
-        achados_pagina = 0
-        for a in candidatos:
-            href = a["href"].strip()
-            titulo = a.get_text(" ", strip=True)
-            if len(titulo) < 15:
-                continue
-            # Mantém apenas links que apontam para notícias/resoluções do CFM.
-            if not re.search(r"/(noticias|resolucao|resolucoes|normas)", href, re.I):
-                continue
-            if href.startswith("/"):
-                href = "https://portal.cfm.org.br" + href
-            if "cfm.org.br" not in href:
-                continue
-            # Ignora os links de paginação/categoria genéricos.
-            if href.rstrip("/").endswith(("/noticias", "/noticias/resolucao", "/resolucao")):
-                continue
-            if href in vistos_url:
-                continue
-            vistos_url.add(href)
-            achados_pagina += 1
-            resultados.append(
-                {
-                    "fonte": "CFM",
-                    "secao": "Resoluções/Notícias",
-                    "id": f"cfm:{href}",
-                    "titulo": titulo,
-                    "orgao": "Conselho Federal de Medicina",
-                    "trecho": "",
-                    "url": href,
-                }
-            )
-
-        log(f"CFM: {achados_pagina} itens encontrados em {pagina}.")
+        ident = f"cfm:{p.get('id') or link}"
+        data_pub = (p.get("date") or "")[:10]
+        resultados.append(
+            {
+                "fonte": "CFM",
+                "secao": f"Publicação de {data_pub}" if data_pub else "Publicação",
+                "id": ident,
+                "titulo": titulo,
+                "orgao": "Conselho Federal de Medicina",
+                "trecho": "",
+                "url": link,
+            }
+        )
 
     return resultados
 
@@ -372,7 +355,9 @@ def main() -> int:
     palavras = config.get("palavras_chave", [])
     chaves_norm = [(p, normalizar(p)) for p in palavras]
     secoes = config.get("dou", {}).get("secoes", ["do1"])
-    paginas_cfm = config.get("cfm", {}).get("paginas", [])
+    cfm_cfg = config.get("cfm", {})
+    cfm_api = cfm_cfg.get("api", "https://portal.cfm.org.br/wp-json/wp/v2/posts")
+    cfm_por_pagina = cfm_cfg.get("por_pagina", 30)
 
     data = args.data or datetime.now(FUSO_BR).strftime("%d-%m-%Y")
     log(f"Iniciando monitoramento para {data}.")
@@ -388,7 +373,7 @@ def main() -> int:
         log(erros[-1])
 
     try:
-        cfm_itens = buscar_cfm(paginas_cfm)
+        cfm_itens = buscar_cfm(cfm_api, cfm_por_pagina)
     except Exception as e:
         cfm_itens = []
         erros.append(f"Erro geral na coleta do CFM: {e}")
