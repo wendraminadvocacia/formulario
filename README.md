@@ -14,6 +14,10 @@ O relatório é:
 
 Publicações que já apareceram em dias anteriores **não se repetem** (o robô guarda o que já viu em `estado/vistos.json`).
 
+> ⚡ **Acesso rápido (ícone):** abra o arquivo [`atalho.html`](atalho.html) no navegador
+> e toque em "Adicionar à Tela de Início" para criar um ícone no celular com botões
+> para ver o agendamento, rodar na hora e abrir os relatórios.
+
 ---
 
 ## Como funciona
@@ -85,6 +89,8 @@ em **Run workflow**. Isso executa na hora, sem esperar as 8h.
 
 ## Observações importantes
 
+- Para o agendamento diário funcionar, o código precisa estar na **branch padrão**
+  (`main`) do repositório. O GitHub só ativa tarefas agendadas a partir dela.
 - O **horário das 8h** pode sofrer pequenos atrasos: o agendador do GitHub não é
   exato em horários de pico. O relatório sempre mostra o horário real em que foi gerado.
 - O GitHub **desativa agendamentos** em repositórios sem nenhuma atividade por 60
