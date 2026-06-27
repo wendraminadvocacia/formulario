@@ -25,8 +25,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
+import time
 import unicodedata
 from datetime import datetime, timezone, timedelta
 from html import unescape
@@ -53,7 +55,9 @@ UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
-TIMEOUT = 40
+TIMEOUT = 90          # o DOU pode demorar a responder a seção do1 (grande)
+TENTATIVAS = 3        # número de tentativas por requisição
+DEBUG = os.environ.get("MONITOR_DEBUG") == "1"
 
 
 # --------------------------------------------------------------------------- #
@@ -64,6 +68,37 @@ def log(msg: str) -> None:
     """Imprime no log do GitHub Actions com horário."""
     agora = datetime.now(FUSO_BR).strftime("%H:%M:%S")
     print(f"[{agora}] {msg}", flush=True)
+
+
+def nova_sessao() -> requests.Session:
+    sessao = requests.Session()
+    sessao.headers.update(
+        {
+            "User-Agent": UA,
+            "Accept-Language": "pt-BR,pt;q=0.9",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        }
+    )
+    return sessao
+
+
+def baixar(sessao: requests.Session, url: str):
+    """Faz GET com algumas tentativas; devolve o Response ou None em caso de falha."""
+    ultimo_erro = None
+    for tentativa in range(1, TENTATIVAS + 1):
+        try:
+            resp = sessao.get(url, timeout=TIMEOUT)
+            resp.raise_for_status()
+            if DEBUG:
+                log(f"  [debug] {url} -> HTTP {resp.status_code}, "
+                    f"{len(resp.text)} bytes, url final: {resp.url}")
+            return resp
+        except Exception as e:
+            ultimo_erro = e
+            log(f"  tentativa {tentativa}/{TENTATIVAS} falhou: {e}")
+            time.sleep(3 * tentativa)
+    log(f"  desisti de {url}: {ultimo_erro}")
+    return None
 
 
 def normalizar(texto: str) -> str:
@@ -129,23 +164,25 @@ def buscar_dou(data_ddmmaaaa: str, secoes: list[str]) -> list[dict]:
     completa de cada seção dentro de <script id="params">.
     """
     resultados: list[dict] = []
-    sessao = requests.Session()
-    sessao.headers.update({"User-Agent": UA, "Accept-Language": "pt-BR,pt;q=0.9"})
+    sessao = nova_sessao()
 
     for secao in secoes:
         url = f"https://www.in.gov.br/leiturajornal?secao={secao}&data={data_ddmmaaaa}"
         log(f"DOU: baixando seção {secao} ({data_ddmmaaaa})...")
-        try:
-            resp = sessao.get(url, timeout=TIMEOUT)
-            resp.raise_for_status()
-        except Exception as e:
-            log(f"DOU: falha ao baixar {secao}: {e}")
+        resp = baixar(sessao, url)
+        if resp is None:
             continue
 
         soup = BeautifulSoup(resp.text, "lxml")
+        # O JSON da edição fica em <script id="params"> (pode variar de id).
         script = soup.find("script", id="params")
         if not script or not script.string:
-            log(f"DOU: seção {secao} sem dados (página vazia ou sem edição no dia).")
+            for s in soup.find_all("script"):
+                if s.string and "jsonArray" in s.string:
+                    script = s
+                    break
+        if not script or not script.string:
+            log(f"DOU: seção {secao} sem o bloco de dados (sem edição no dia?).")
             continue
 
         try:
@@ -155,6 +192,8 @@ def buscar_dou(data_ddmmaaaa: str, secoes: list[str]) -> list[dict]:
             continue
 
         artigos = dados.get("jsonArray", []) or []
+        if DEBUG:
+            log(f"  [debug] chaves do JSON: {list(dados.keys())[:12]}")
         log(f"DOU: seção {secao} trouxe {len(artigos)} publicações.")
 
         for art in artigos:
@@ -196,22 +235,28 @@ def buscar_cfm(paginas: list[str]) -> list[dict]:
     """
     resultados: list[dict] = []
     vistos_url: set[str] = set()
-    sessao = requests.Session()
-    sessao.headers.update({"User-Agent": UA, "Accept-Language": "pt-BR,pt;q=0.9"})
+    sessao = nova_sessao()
 
     for pagina in paginas:
         log(f"CFM: baixando {pagina} ...")
-        try:
-            resp = sessao.get(pagina, timeout=TIMEOUT)
-            resp.raise_for_status()
-        except Exception as e:
-            log(f"CFM: falha ao baixar {pagina}: {e}")
+        resp = baixar(sessao, pagina)
+        if resp is None:
             continue
 
         soup = BeautifulSoup(resp.text, "lxml")
-
-        # Procura links de notícias/resoluções dentro do conteúdo da página.
         candidatos = soup.find_all("a", href=True)
+
+        if DEBUG:
+            amostras = []
+            for a in candidatos:
+                h = a["href"]
+                if re.search(r"noticias|resolu", h, re.I):
+                    amostras.append(h)
+            log(f"  [debug] {len(candidatos)} links no total; "
+                f"{len(amostras)} parecem de notícia/resolução. Exemplos:")
+            for h in amostras[:15]:
+                log(f"    [debug] {h}")
+
         achados_pagina = 0
         for a in candidatos:
             href = a["href"].strip()
@@ -219,14 +264,14 @@ def buscar_cfm(paginas: list[str]) -> list[dict]:
             if len(titulo) < 15:
                 continue
             # Mantém apenas links que apontam para notícias/resoluções do CFM.
-            if not re.search(r"/(noticias|resolucao|resolucoes|normas)/", href):
+            if not re.search(r"/(noticias|resolucao|resolucoes|normas)", href, re.I):
                 continue
             if href.startswith("/"):
                 href = "https://portal.cfm.org.br" + href
-            if "portal.cfm.org.br" not in href:
+            if "cfm.org.br" not in href:
                 continue
             # Ignora os links de paginação/categoria genéricos.
-            if href.rstrip("/").endswith(("/noticias", "/noticias/resolucao")):
+            if href.rstrip("/").endswith(("/noticias", "/noticias/resolucao", "/resolucao")):
                 continue
             if href in vistos_url:
                 continue
