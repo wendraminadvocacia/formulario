@@ -1,0 +1,62 @@
+DRE - WENDRAMIN ADVOCACIA
+Gerado automaticamente por dre/gerar_dre.py | Valores em R$ | Regime de competencia
+""
+=== DRE MENSAL ===
+ITEM,Jan/26,Fev/26,Mar/26,Abr/26,Mai/26,Jun/26,TOTAL
+RECEITA BRUTA DE HONORARIOS,16144.44,16711.01,23066.52,24476.00,31808.21,35520.72,147726.90
+  Honorarios contratuais e avulsos,14133.75,16711.01,18904.00,24476.00,22798.44,27273.78,124296.98
+  Honorarios sucumbenciais,2010.69,0.00,4162.52,0.00,9009.77,8246.94,23429.92
+(-) DESPESAS TOTAIS,10917.57,6440.17,7340.29,6032.56,11261.75,9444.85,51437.19
+  Andrieli (assessoria + repasses),3000.00,4590.00,6180.00,3000.00,8830.00,8829.28,34429.28
+  Marketing e cursos,3000.00,1000.00,0.00,1666.00,1500.00,0.00,7166.00
+  Software / TI / Site,4332.00,22.50,98.50,22.50,22.50,22.50,4520.50
+  Impostos e taxas,364.44,647.67,421.94,1112.93,480.94,371.94,3399.86
+  Contabilidade,170.00,180.00,180.00,180.00,180.00,170.00,1060.00
+  Energia eletrica,0.00,0.00,304.12,0.00,107.18,0.00,411.30
+  Telefone,51.13,0.00,48.91,51.13,51.13,51.13,253.43
+  Custas e suprimentos,0.00,0.00,106.82,0.00,90.00,0.00,196.82
+= RESULTADO DO MES,5226.87,10270.84,15726.23,18443.44,20546.46,26075.87,96289.71
+Margem liquida (%),32.4%,61.5%,68.2%,75.4%,64.6%,73.4%,65.2%
+""
+=== INDICADORES (media mensal do periodo) ===
+Receita media mensal,24621.15
+Despesa media mensal,8572.86
+Resultado medio mensal,16048.28
+Honorarios a receber (lancados e nao recebidos no ultimo mes),7632.27
+""
+=== PROJECAO PROXIMOS MESES ===
+Contratual = soma dos contratos ativos (contratos.csv) que ainda nao encerraram
+Sucumbenciais = media historica (R$ 3904.99/mes) | Despesa = media historica (R$ 8572.86/mes)
+ITEM,Jul/26,Ago/26,Set/26,Out/26,Nov/26,Dez/26
+Honorarios contratuais (contratos atuais),25948.78,23743.31,22843.31,20634.99,18161.99,12861.99
+Honorarios sucumbenciais (media),3904.99,3904.99,3904.99,3904.99,3904.99,3904.99
+RECEITA PROJETADA,29853.77,27648.30,26748.30,24539.98,22066.98,16766.98
+(-) Despesas estimadas (media),8572.86,8572.86,8572.86,8572.86,8572.86,8572.86
+= RESULTADO PROJETADO,21280.90,19075.43,18175.43,15967.11,13494.11,8194.11
+""
+Obs: projecao conservadora - considera apenas contratos que voce JA tem.
+"Com a entrada de clientes novos (tendencia do periodo), a receita tende a ser maior."
+""
+=== CONTRATOS ATIVOS (fonte da projecao) ===
+CLIENTE,Valor/mes,Encerra em
+Maria Helena Dallastra,2650.00,Nov/26
+Gerti Schneider Gauer,2331.25,Mai/27
+Ricardo Antonio Salvon,1473.00,Out/26
+Larissa Stulp de Anhaia,1325.00,Mar/27
+Beno Edvino Vogt,1325.00,Nov/26
+Cleria Maria Sequeira,1325.00,Jan/27
+Afonso Back,1325.00,Mar/27
+Clair Mateus,1325.00,Mar/27
+Dirlei Funez Metz,1325.00,Jan/27
+Dayane Cristina Dondoerfer,1325.00,Nov/26
+Jheimi Coronetti,1322.15,Fev/27
+Patricia Ayumi Shiraishi,1104.16,Set/26
+Marcieli Berti,1104.16,Set/26
+Marcia Thomas Froehlich,1104.16,Jul/26
+Jose Flavio Weber,1101.31,Jul/26
+Ledi Spenassatto,1000.00,Out/26
+Leticia Remowicz,917.00,Mai/27
+Thayna Tabata InovaFisio,900.00,Ago/26
+Maria Ines Borges,880.48,Set/27
+Maria Rodrigues Stulp,736.11,Abr/27
+Roger Alencar Bosa,50.00,Jan/27
