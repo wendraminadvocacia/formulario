@@ -1,0 +1,398 @@
+# =============================================================================
+# Base estruturada dos Temas 6 e 1234 da Repercussão Geral do STF
+# (ações de fornecimento de medicamentos)
+#
+# Esta base é lida pelo analisador (analisar_temas.py). Cada "item" é um
+# requisito/critério da tese. Para cada item há:
+#   - o texto da tese (resumido) e a alínea oficial, quando houver;
+#   - "deteccao": termos e padrões que o analisador procura nos documentos
+#     do caso para identificar se aquele requisito está demonstrado;
+#   - "prova": que documento/conteúdo costuma satisfazer o requisito (serve
+#     de orientação no relatório de preenchimento).
+#
+# O texto literal e as fontes oficiais estão em temas_stf/REFERENCIA_TESES.md.
+# Ajuste termos/padrões à vontade — o código não precisa ser alterado.
+# =============================================================================
+
+# Parâmetro usado no critério de competência do Tema 1234 (210 salários mínimos).
+# ATUALIZE o valor do salário mínimo vigente todo início de ano.
+parametros:
+  salario_minimo: 1518.00          # CONFIRA o valor vigente (referência: piso federal)
+  fator_competencia_federal: 210   # nº de salários mínimos (custo anual do tratamento)
+
+temas:
+  # ===========================================================================
+  - id: tema6
+    numero: 6
+    titulo: >-
+      Dever do Estado de fornecer medicamento registrado na ANVISA, mas não
+      incorporado às listas do SUS, a portador de doença grave.
+    leading_case: RE 566.471 (Rel. Min. Marco Aurélio / Red. p/ acórdão)
+    situacao: Mérito julgado; tese fixada (requisitos cumulativos).
+    fonte_oficial: https://portal.stf.jus.br/jurisprudenciaRepercussao/tema.asp?num=6
+    resumo: >-
+      Em regra, a ausência de incorporação do medicamento às listas do SUS
+      (RENAME, REME, REMUME etc.) impede o fornecimento por decisão judicial,
+      independentemente do custo. Excepcionalmente, é possível a concessão de
+      medicamento REGISTRADO NA ANVISA e não incorporado, desde que preenchidos,
+      CUMULATIVAMENTE, os requisitos abaixo — ônus da prova do autor.
+    itens:
+      - id: T6-REGRA
+        alinea: ""
+        tipo: pressuposto
+        obrigatorio: true
+        titulo: Pressuposto — registro na ANVISA e não incorporação
+        descricao: >-
+          O fármaco deve ter REGISTRO na ANVISA (medicamento sem registro segue
+          regra própria, mais restritiva) e não estar incorporado às listas de
+          dispensação do SUS. Identificar a situação registral e de incorporação.
+        prova: >-
+          Bula/registro ANVISA; consulta RENAME/PCDT demonstrando a não
+          incorporação; nº de registro/processo na ANVISA.
+        deteccao:
+          termos:
+            - anvisa
+            - registro sanitario
+            - numero de registro
+            - rename
+            - nao incorporado
+            - nao consta na lista
+            - nao padronizado
+          padroes:
+            - "registro\\s+n[ºo°.]*\\s*\\d"
+
+      - id: T6-a
+        alinea: a
+        tipo: requisito
+        obrigatorio: true
+        titulo: Negativa de fornecimento na via administrativa
+        descricao: >-
+          Prévio requerimento administrativo do medicamento ao ente público e
+          respectiva negativa (ou silêncio). O autor deve ter buscado a via
+          administrativa antes da judicialização.
+        prova: >-
+          Protocolo do pedido administrativo (SUS/Secretaria de Saúde) e
+          resposta de indeferimento, ou comprovante de protocolo sem resposta.
+        deteccao:
+          termos:
+            - negativa de fornecimento
+            - via administrativa
+            - requerimento administrativo
+            - indeferimento administrativo
+            - protocolo administrativo
+            - secretaria de saude
+            - solicitacao administrativa
+            - negou o fornecimento
+
+      - id: T6-b
+        alinea: b
+        tipo: requisito
+        obrigatorio: true
+        titulo: Ilegalidade da não incorporação pela CONITEC / ausência de pedido / mora
+        descricao: >-
+          Demonstrar a ilegalidade do ato de não incorporação do medicamento
+          pela CONITEC, OU a ausência de pedido de incorporação, OU a mora na
+          apreciação do pedido.
+        prova: >-
+          Decisão/relatório da CONITEC; comprovação de inexistência de pedido de
+          incorporação; ou prova da demora além do prazo legal de apreciação.
+        deteccao:
+          termos:
+            - conitec
+            - incorporacao
+            - nao incorporacao
+            - mora
+            - ausencia de pedido
+            - ilegalidade do ato
+            - relatorio de recomendacao
+
+      - id: T6-c
+        alinea: c
+        tipo: requisito
+        obrigatorio: true
+        titulo: Impossibilidade de substituição por medicamento das listas do SUS
+        descricao: >-
+          Impossibilidade de substituição do fármaco por outro constante das
+          listas do SUS e dos protocolos clínicos e diretrizes terapêuticas
+          (PCDT).
+        prova: >-
+          Laudo médico justificando inadequação/ineficácia/intolerância às
+          alternativas terapêuticas disponíveis no SUS (PCDT).
+        deteccao:
+          termos:
+            - impossibilidade de substituicao
+            - nao ha alternativa
+            - inexistencia de alternativa
+            - protocolo clinico
+            - pcdt
+            - diretrizes terapeuticas
+            - refratario
+            - intolerancia
+            - falha terapeutica
+            - ineficacia das alternativas
+
+      - id: T6-d
+        alinea: d
+        tipo: requisito
+        obrigatorio: true
+        titulo: Eficácia e segurança — medicina baseada em evidências (alto nível)
+        descricao: >-
+          Comprovação, à luz da medicina baseada em evidências, da eficácia,
+          acurácia, efetividade e segurança do fármaco, respaldada por evidências
+          científicas de alto nível (ensaios clínicos randomizados e revisão
+          sistemática ou meta-análise).
+        prova: >-
+          Estudos científicos, ensaios clínicos randomizados, revisões
+          sistemáticas/meta-análises; parecer técnico/NATJUS.
+        deteccao:
+          termos:
+            - medicina baseada em evidencias
+            - ensaio clinico randomizado
+            - revisao sistematica
+            - meta-analise
+            - metanalise
+            - eficacia
+            - efetividade
+            - seguranca
+            - evidencia cientifica
+            - estudo clinico
+
+      - id: T6-e
+        alinea: e
+        tipo: requisito
+        obrigatorio: true
+        titulo: Imprescindibilidade clínica — laudo médico fundamentado
+        descricao: >-
+          Imprescindibilidade clínica do tratamento, comprovada mediante laudo
+          médico fundamentado e descritivo (diagnóstico, CID, posologia,
+          insucesso de tratamentos anteriores).
+        prova: >-
+          Laudo/relatório médico circunstanciado, com CID, histórico do
+          tratamento, posologia e justificativa de imprescindibilidade.
+        deteccao:
+          termos:
+            - laudo medico
+            - relatorio medico
+            - imprescindibilidade
+            - prescricao
+            - cid
+            - diagnostico
+            - posologia
+            - quadro clinico
+          padroes:
+            - "cid[\\s-]*10?\\s*[a-z]?\\d"
+
+      - id: T6-f
+        alinea: f
+        tipo: requisito
+        obrigatorio: true
+        titulo: Incapacidade financeira de custeio
+        descricao: >-
+          Comprovação da incapacidade financeira do autor (e/ou da família) de
+          arcar com o custeio do medicamento.
+        prova: >-
+          Declaração de hipossuficiência, comprovante de renda, CadÚnico,
+          orçamentos do medicamento x renda familiar.
+        deteccao:
+          termos:
+            - incapacidade financeira
+            - hipossuficiencia
+            - hipossuficiente
+            - comprovante de renda
+            - cadunico
+            - cadastro unico
+            - nao possui condicoes financeiras
+            - gratuidade de justica
+            - declaracao de pobreza
+
+      - id: T6-PROC
+        alinea: ""
+        tipo: procedimento
+        obrigatorio: false
+        titulo: Consulta ao NATJUS / vedação de decidir só com laudo do autor
+        descricao: >-
+          O juízo deve consultar o NATJUS (Núcleo de Apoio Técnico do Judiciário)
+          ou especialistas e dar ciência aos órgãos para avaliação de eventual
+          incorporação. É vedado decidir apenas com base no laudo apresentado
+          pela parte autora.
+        prova: >-
+          Parecer NATJUS/e-NatJus; nota técnica; quesitos ao perito.
+        deteccao:
+          termos:
+            - natjus
+            - e-natjus
+            - nota tecnica
+            - nucleo de apoio tecnico
+            - parecer tecnico
+
+  # ===========================================================================
+  - id: tema1234
+    numero: 1234
+    titulo: >-
+      Legitimidade da União e competência da Justiça Federal nas ações de
+      fornecimento de medicamentos registrados na ANVISA e não incorporados ao SUS.
+    leading_case: RE 1.366.243 (Tema 1234)
+    situacao: Mérito julgado; acórdão publicado. Modulação de efeitos.
+    fonte_oficial: https://portal.stf.jus.br/jurisprudenciaRepercussao/verAndamentoProcesso.asp?incidente=6335939&numeroProcesso=1366243&classeProcesso=RE&numeroTema=1234
+    resumo: >-
+      Define competência (Justiça Federal x Estadual) conforme o custo anual do
+      tratamento, a legitimidade passiva dos entes, a definição de medicamento
+      não incorporado, a análise obrigatória do ato da CONITEC e do indeferimento
+      administrativo, e o financiamento/ressarcimento interfederativo. Remete aos
+      requisitos materiais do Tema 6.
+    itens:
+      - id: T1234-COMP
+        alinea: I
+        tipo: competencia
+        obrigatorio: true
+        titulo: Competência — critério dos 210 salários mínimos (PMVG/CMED)
+        descricao: >-
+          Ações de medicamento registrado na ANVISA e não incorporado ao SUS
+          tramitam na JUSTIÇA FEDERAL (com a União no polo passivo) quando o custo
+          anual do tratamento — calculado pelo Preço Máximo de Venda ao Governo
+          (PMVG) divulgado pela CMED — for IGUAL OU SUPERIOR a 210 salários
+          mínimos. Abaixo desse valor, competência da Justiça Estadual.
+        prova: >-
+          Cálculo do custo anual do tratamento pelo PMVG/CMED; tabela CMED;
+          posologia anualizada do laudo médico.
+        deteccao:
+          termos:
+            - 210 salarios minimos
+            - pmvg
+            - preco maximo de venda ao governo
+            - cmed
+            - custo anual do tratamento
+            - competencia da justica federal
+            - competencia da justica estadual
+          padroes:
+            - "210\\s*sal[aá]rios"
+        # gatilho especial para o cálculo de competência (custo anual x 210 SM):
+        calculo_competencia: true
+
+      - id: T1234-LEGIT
+        alinea: II
+        tipo: requisito
+        obrigatorio: true
+        titulo: Legitimidade passiva e litisconsórcio dos entes
+        descricao: >-
+          Definição do polo passivo conforme a competência: nas ações de
+          competência federal, a União integra a lide; nos demais casos, Estados
+          e Municípios. Verificar a correta indicação dos réus.
+        prova: >-
+          Petição inicial com a indicação dos entes (União/Estado/Município)
+          compatível com a faixa de custo do tratamento.
+        deteccao:
+          termos:
+            - legitimidade passiva
+            - litisconsorcio
+            - uniao
+            - estado
+            - municipio
+            - polo passivo
+            - solidariedade
+
+      - id: T1234-DEF
+        alinea: III
+        tipo: definicao
+        obrigatorio: true
+        titulo: Enquadramento — medicamento "não incorporado"
+        descricao: >-
+          Enquadrar o pedido na definição de medicamento não incorporado:
+          (i) não constante das políticas públicas do SUS; (ii) previsto em PCDT
+          para outra finalidade; (iii) sem registro na ANVISA; ou (iv) uso
+          off-label sem PCDT ou fora das listas de componentes.
+        prova: >-
+          Consulta RENAME/PCDT; bula x indicação pretendida (off-label);
+          situação registral na ANVISA.
+        deteccao:
+          termos:
+            - nao incorporado
+            - off-label
+            - off label
+            - fora da bula
+            - politica publica
+            - componente basico
+            - componente especializado
+            - rename
+
+      - id: T1234-CONITEC
+        alinea: IV
+        tipo: requisito
+        obrigatorio: true
+        titulo: Análise obrigatória do ato da CONITEC e do indeferimento administrativo
+        descricao: >-
+          SOB PENA DE NULIDADE, o Judiciário deve analisar o ato administrativo de
+          não incorporação pela CONITEC e o indeferimento na via administrativa,
+          limitando-se ao controle de legalidade (teoria dos motivos
+          determinantes), sem substituir o mérito administrativo.
+        prova: >-
+          Relatório/decisão da CONITEC; ato de indeferimento administrativo;
+          fundamentação do controle de legalidade.
+        deteccao:
+          termos:
+            - conitec
+            - controle de legalidade
+            - teoria dos motivos determinantes
+            - indeferimento administrativo
+            - ato administrativo
+            - merito administrativo
+            - sob pena de nulidade
+
+      - id: T1234-REQMAT
+        alinea: V
+        tipo: requisito
+        obrigatorio: true
+        titulo: Requisitos materiais (remissão ao Tema 6)
+        descricao: >-
+          A concessão depende, ainda, do preenchimento dos requisitos materiais
+          do Tema 6 (negativa administrativa, ilegalidade da não incorporação,
+          impossibilidade de substituição, evidência científica de alto nível,
+          imprescindibilidade clínica e incapacidade financeira).
+        prova: >-
+          Os mesmos documentos exigidos pelos itens do Tema 6.
+        deteccao:
+          termos:
+            - tema 6
+            - requisitos cumulativos
+            - medicina baseada em evidencias
+            - imprescindibilidade
+
+      - id: T1234-FIN
+        alinea: VI
+        tipo: financiamento
+        obrigatorio: false
+        titulo: Financiamento e ressarcimento interfederativo
+        descricao: >-
+          Repartição de custeio: ações de competência federal custeadas pela
+          União; nas ações estaduais (faixa intermediária), a União ressarce
+          percentual das despesas de Estados e Municípios, na forma definida pela
+          tese (cadastro/plataforma nacional).
+        prova: >-
+          Pedido de ressarcimento/cadastro na plataforma nacional, quando aplicável.
+        deteccao:
+          termos:
+            - ressarcimento
+            - financiamento
+            - reparticao de custeio
+            - plataforma nacional
+            - reembolso
+
+      - id: T1234-MOD
+        alinea: VII
+        tipo: procedimento
+        obrigatorio: false
+        titulo: Modulação de efeitos (marco temporal)
+        descricao: >-
+          As novas regras de competência aplicam-se às ações AJUIZADAS APÓS a
+          publicação da decisão de mérito (18/09/2024). Verificar a data de
+          ajuizamento para definir o regime aplicável.
+        prova: >-
+          Data de distribuição/ajuizamento da ação.
+        deteccao:
+          termos:
+            - modulacao
+            - ajuizadas apos
+            - data de ajuizamento
+            - distribuicao
+            - 18/09/2024
+            - 19/09/2024

@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 .ultimo_relatorio.txt
+
+# Relatórios gerados pelo analisador dos Temas 6/1234 (mantém a pasta, ignora os .md)
+analises/*.md

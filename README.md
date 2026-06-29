@@ -1,3 +1,13 @@
+# Wendramin Advocacia — Ferramentas
+
+Este repositório reúne duas ferramentas independentes:
+
+1. **Monitoramento do DOU e do CFM** — robô diário (descrito abaixo).
+2. **Analisador dos Temas 6 e 1234 do STF** (ações de medicamentos) — veja a
+   seção [Analisador dos Temas 6 e 1234 do STF](#analisador-dos-temas-6-e-1234-do-stf-ações-de-medicamentos).
+
+---
+
 # Monitoramento do DOU e do CFM — Médicos e Pacientes
 
 Robô que, **todos os dias às 8h da manhã (horário de Brasília)**, verifica:
@@ -99,3 +109,58 @@ em **Run workflow**. Isso executa na hora, sem esperar as 8h.
 - O robô depende do formato das páginas do DOU e do CFM. Se algum dia uma dessas
   páginas mudar de estrutura, o relatório registra um aviso e os logs da aba
   **Actions** mostram o que aconteceu.
+
+---
+
+# Analisador dos Temas 6 e 1234 do STF (ações de medicamentos)
+
+Ferramenta para **triagem documental** de ações de fornecimento de medicamentos,
+com base nos dois principais precedentes do STF:
+
+| Tema | Leading case | Do que trata |
+|------|--------------|--------------|
+| **Tema 6** | RE 566.471 | Requisitos cumulativos (a–f) para concessão judicial de medicamento registrado na ANVISA, mas **não incorporado** ao SUS. |
+| **Tema 1234** | RE 1.366.243 | **Competência** (Justiça Federal × Estadual pelo critério dos 210 salários mínimos / PMVG-CMED), legitimidade dos entes, controle do ato da CONITEC e financiamento. |
+
+O texto resumido das teses e os **links oficiais do STF** estão em
+[`temas_stf/REFERENCIA_TESES.md`](temas_stf/REFERENCIA_TESES.md). Os requisitos
+ficam estruturados em [`temas_stf/temas.yaml`](temas_stf/temas.yaml) (dá para
+ajustar termos sem mexer no código).
+
+## Como usar
+
+1. **Coloque os documentos do caso** na pasta [`documentos/`](documentos/)
+   (petição, laudo médico, negativa administrativa, relatório da CONITEC,
+   comprovantes de renda, estudos científicos…). Aceita `.txt`, `.md`, `.pdf`
+   e `.docx`.
+2. **Instale as dependências** (uma vez): `pip install -r requirements.txt`
+3. **Rode o analisador:**
+
+   ```bash
+   python analisar_temas.py                  # analisa documentos/ para os 2 temas
+   python analisar_temas.py --tema 6         # só o Tema 6
+   python analisar_temas.py --tema 1234      # só o Tema 1234
+   python analisar_temas.py --custo-anual 250000   # informa o custo anual (R$)
+   python analisar_temas.py --docs ./caso_x  # outra pasta de documentos
+   ```
+
+4. **Leia o relatório** gerado em [`analises/`](analises/) (um `.md` por tema).
+
+## O que o relatório traz
+
+Para **cada requisito/item da tese**, o relatório preenche:
+
+- **Status** — ✅ atendido · ⚠️ indício (conferir) · ❌ não localizado ·
+  📋 conferência manual;
+- os **trechos dos documentos** que serviram de evidência;
+- a **prova típica** que satisfaz aquele requisito (o que anexar quando falta);
+- um **placar** e uma **lista de pendências** dos requisitos obrigatórios.
+
+No Tema 1234, ele ainda **calcula a competência** (custo anual × 210 salários
+mínimos): atualize o valor do salário mínimo em `temas_stf/temas.yaml`
+(`parametros.salario_minimo`) e confirme o custo anual pelo PMVG/CMED.
+
+> ⚠️ **Atenção:** é uma triagem assistida por palavras-chave — **apoio
+> operacional**, não substitui a análise jurídica nem a leitura integral das
+> teses e dos documentos. Os relatórios em `analises/*.md` não são versionados
+> (ficam só na sua máquina).
