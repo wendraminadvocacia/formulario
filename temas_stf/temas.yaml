@@ -17,7 +17,7 @@
 # Parâmetro usado no critério de competência do Tema 1234 (210 salários mínimos).
 # ATUALIZE o valor do salário mínimo vigente todo início de ano.
 parametros:
-  salario_minimo: 1518.00          # CONFIRA o valor vigente (referência: piso federal)
+  salario_minimo: 1621.00          # piso federal vigente (atualize todo início de ano)
   fator_competencia_federal: 210   # nº de salários mínimos (custo anual do tratamento)
 
 temas:
